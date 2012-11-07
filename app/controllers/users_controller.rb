@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
 
+  http_basic_authenticate_with :name => "user", :password => "pass", :except => [:index, :show]
+
   def index
       @users = User.all
 
@@ -75,7 +77,7 @@ class UsersController < ApplicationController
     @user.destroy
 
     respond_to do |format|
-      format.html { redirect_to users_url }
+      format.html { redirect_to user_url }
       format.json { head :no_content }
     end
   end

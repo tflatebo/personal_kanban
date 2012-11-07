@@ -1,4 +1,7 @@
 class TasksController < ApplicationController
+
+  http_basic_authenticate_with :name => "user", :password => "pass", :except => [:index, :show]
+
   # GET /tasks
   # GET /tasks.json
   def index
@@ -34,7 +37,8 @@ class TasksController < ApplicationController
 
   # GET /tasks/1/edit
   def edit
-    @task = Task.find(params[:id])
+    @user = User.find(params[:user_id])
+    @task = @user.tasks.find(params[:id])
   end
 
   # POST /tasks
@@ -42,17 +46,8 @@ class TasksController < ApplicationController
   def create
     @user = User.find(params[:user_id])
     @task = @user.tasks.create(params[:task])
-    #redirect_to user_path(@user)
-
-    respond_to do |format|
-      if @task.save
-        format.html { redirect_to @user.tasks, notice: 'Task was successfully created.' }
-        format.json { render json: @task, status: :created, location: @task }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @task.errors, status: :unprocessable_entity }
-      end
-    end
+    
+    redirect_to user_path(@user)
   end
 
   # PUT /tasks/1
@@ -74,12 +69,10 @@ class TasksController < ApplicationController
   # DELETE /tasks/1
   # DELETE /tasks/1.json
   def destroy
-    @task = Task.find(params[:id])
+    @user = User.find(params[:user_id])
+    @task = @user.tasks.find(params[:id])
     @task.destroy
 
-    respond_to do |format|
-      format.html { redirect_to tasks_url }
-      format.json { head :no_content }
-    end
+    redirect_to user_path(@user)
   end
 end
